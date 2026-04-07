@@ -18,9 +18,9 @@ model Block {
   id          String   @id @default(uuid())
   title       String
   completed   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   project_id  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
   project     Project  @relation(fields: [project_id], references: [id])
 }
@@ -30,9 +30,9 @@ model Project {
 
   id          String   @id @default(uuid())
   name        String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   area_id     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
   blocks      Block[]
   area        Area     @relation(fields: [area_id], references: [id])
@@ -44,7 +44,7 @@ model Area {
   id          String   @id @default(uuid())
   name        String
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @default(now()) @updatedAt
 
   projects     Project[]
 }
