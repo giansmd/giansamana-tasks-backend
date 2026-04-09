@@ -13,6 +13,10 @@ export class RpcError extends Error {
   }
 }
 
+export function isSchemaCacheError(error: unknown): error is RpcError {
+  return error instanceof RpcError && error.code === "PGRST002";
+}
+
 export async function invokeRpc<TResponse>(
   client: SupabaseClient,
   fn: string,

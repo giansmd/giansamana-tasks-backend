@@ -27,8 +27,8 @@ export async function bootstrapApp(): Promise<BootstrapContext> {
   const supabase = createSupabaseRpcClient();
 
   const services = new AppServices({
-    area: new AreaSupabasePrismaRepository(supabase),
-    project: new ProjectSupabasePrismaRepository(supabase),
+    area: new AreaSupabasePrismaRepository(supabase, prisma),
+    project: new ProjectSupabasePrismaRepository(supabase, prisma),
     block: new BlockSupabasePrismaRepository(supabase, prisma),
   });
 
