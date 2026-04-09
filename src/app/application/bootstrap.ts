@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { AppServices } from "./AppServices.js";
 import {
@@ -7,6 +6,7 @@ import {
   ProjectSupabasePrismaRepository,
 } from "../infrastructure/repositories/index.js";
 import { createSupabaseRpcClient } from "../infrastructure/supabase/client.js";
+import { PrismaClient } from "../../../generated/prisma/client.js";
 
 export type BootstrapContext = {
   prisma: PrismaClient;
@@ -27,9 +27,9 @@ export async function bootstrapApp(): Promise<BootstrapContext> {
   const supabase = createSupabaseRpcClient();
 
   const services = new AppServices({
-    area: new AreaSupabasePrismaRepository(supabase, prisma),
-    project: new ProjectSupabasePrismaRepository(supabase, prisma),
-    block: new BlockSupabasePrismaRepository(supabase, prisma),
+    area: new AreaSupabasePrismaRepository(supabase),
+    project: new ProjectSupabasePrismaRepository(supabase),
+    block: new BlockSupabasePrismaRepository(supabase),
   });
 
   return {

@@ -394,3 +394,25 @@ $$;
 
 -- Ensure PostgREST picks up updated RPC signatures immediately.
 notify pgrst, 'reload schema';
+
+-- Allow the backend service role to execute the RPCs directly.
+grant execute on function public.fn_area_create(text) to service_role;
+grant execute on function public.fn_area_update(text, text) to service_role;
+grant execute on function public.fn_area_delete(text) to service_role;
+grant execute on function public.fn_area_get_by_id(text) to service_role;
+grant execute on function public.fn_area_list() to service_role;
+grant execute on function public.fn_area_get_with_projects(text) to service_role;
+
+grant execute on function public.fn_project_create(text, text) to service_role;
+grant execute on function public.fn_project_update(text, text, text) to service_role;
+grant execute on function public.fn_project_delete(text) to service_role;
+grant execute on function public.fn_project_get_by_id(text) to service_role;
+grant execute on function public.fn_project_list() to service_role;
+grant execute on function public.fn_project_get_with_blocks(text) to service_role;
+
+grant execute on function public.fn_block_create(text, boolean, text) to service_role;
+grant execute on function public.fn_block_update(text, text, boolean, text) to service_role;
+grant execute on function public.fn_block_delete(text) to service_role;
+grant execute on function public.fn_block_get_by_id(text) to service_role;
+grant execute on function public.fn_block_list() to service_role;
+grant execute on function public.fn_block_get_by_project_id(text) to service_role;
