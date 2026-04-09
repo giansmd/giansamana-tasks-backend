@@ -4,6 +4,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "start": "tsx watch src/main.ts",
+    "typecheck": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,16 +14,22 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "@types/node": "^25.5.2",
     "@types/pg": "^8.20.0",
     "dotenv": "^17.4.1",
     "prisma": "^7.6.0",
+    "tsx": "^4.20.6",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.6.0",
     "@prisma/client": "^7.6.0",
+    "@supabase/supabase-js": "^2.56.1",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "pg": "^8.20.0"
   }
 }

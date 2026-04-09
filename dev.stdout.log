@@ -1,0 +1,4 @@
+
+> giansamana-tasks-backend@1.0.0 dev
+> node --loader ts-node/esm src/main.ts
+
