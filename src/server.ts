@@ -1,6 +1,6 @@
-import { bootstrapApp, type AppServices } from "./app/index.js";
-import type { Server } from "node:http";
-import { buildHttpApp } from "./app/infrastructure/http/index.js";
+import { bootstrapApp, type AppServices } from './app/index.js';
+import type { Server } from 'node:http';
+import { buildHttpApp } from './app/infrastructure/http/index.js';
 import type {
   IArea,
   IAreaCreateDTO,
@@ -11,7 +11,7 @@ import type {
   IProject,
   IProjectCreateDTO,
   IProjectUpdateDTO,
-} from "./app/domain/models/index.js";
+} from './app/domain/models/index.js';
 
 let prismaDisconnect: (() => Promise<void>) | null = null;
 let servicesInstance: AppServices | null = null;
@@ -51,9 +51,9 @@ export async function stopServer(): Promise<void> {
   prismaDisconnect = null;
 }
 
-export async function startHttpServer(
+export const startHttpServer = async (
   port = Number(process.env.PORT ?? 3000),
-): Promise<Server> {
+): Promise<Server> => {
   if (httpServerInstance) {
     return httpServerInstance;
   }
@@ -63,12 +63,12 @@ export async function startHttpServer(
 
   const server = await new Promise<Server>((resolve, reject) => {
     const instance = app.listen(port, () => resolve(instance));
-    instance.on("error", reject);
+    instance.on('error', reject);
   });
 
   httpServerInstance = server;
   return server;
-}
+};
 
 export type {
   IArea,

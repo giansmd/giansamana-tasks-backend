@@ -10,16 +10,3 @@ export interface IBlock {
 export type IBlockCreateDTO = Omit<IBlock, 'id' | 'createdAt' | 'updatedAt'>;
 export type IBlockUpdateDTO = Partial<IBlockCreateDTO> & Pick<IBlock, 'id'>;
 export type IBlockDeleteDTO = Pick<IBlock, 'id'>;
-
-export interface IBlockResponse {
-  success: boolean;
-  data: IBlock;
-  message?: string;
-}
-
-export interface IBlocksListResponse {
-  success: boolean;
-  data: IBlock[];
-  total: number;
-  message?: string;
-}

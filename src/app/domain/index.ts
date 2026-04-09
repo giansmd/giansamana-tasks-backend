@@ -2,8 +2,6 @@ export type {
   IBlock,
   IBlockCreateDTO,
   IBlockUpdateDTO,
-  IBlockResponse,
-  IBlocksListResponse,
 } from "./models/Block.model";
 
 export type {
@@ -11,9 +9,6 @@ export type {
   IProjectWithBlocks,
   IProjectCreateDTO,
   IProjectUpdateDTO,
-  IProjectResponse,
-  IProjectsListResponse,
-  IProjectWithBlocksResponse,
 } from "./models/Project.model";
 
 export type {
@@ -21,7 +16,4 @@ export type {
   IAreaWithProjects,
   IAreaCreateDTO,
   IAreaUpdateDTO,
-  IAreaResponse,
-  IAreasListResponse,
-  IAreaWithProjectsResponse,
 } from "./models/Area.model";

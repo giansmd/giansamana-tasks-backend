@@ -17,22 +17,3 @@ export type IProjectCreateDTO = Omit<
   "id" | "createdAt" | "updatedAt"
 >;
 export type IProjectUpdateDTO = Partial<IProjectCreateDTO> & Pick<IProject, "id">;
-
-export interface IProjectResponse {
-  success: boolean;
-  data: IProject;
-  message?: string;
-}
-
-export interface IProjectsListResponse {
-  success: boolean;
-  data: IProject[];
-  total: number;
-  message?: string;
-}
-
-export interface IProjectWithBlocksResponse {
-  success: boolean;
-  data: IProjectWithBlocks;
-  message?: string;
-}
