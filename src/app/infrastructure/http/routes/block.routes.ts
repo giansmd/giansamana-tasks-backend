@@ -19,6 +19,16 @@ function buildPaginationLinks(path: string): PaginationLinks {
 export function buildBlockRouter(services: AppServices): Router {
   const router = Router();
 
+  /**
+   * @openapi
+   * /api/v1/blocks:
+   *   get:
+   *     tags: [Blocks]
+   *     summary: List blocks
+   *     responses:
+   *       200:
+   *         description: Blocks retrieved successfully.
+   */
   router.get('/', async (req, res, next) => {
     try {
       const data = await services.block.getAll();
@@ -41,6 +51,24 @@ export function buildBlockRouter(services: AppServices): Router {
     }
   });
 
+  /**
+   * @openapi
+   * /api/v1/blocks/{id}:
+   *   get:
+   *     tags: [Blocks]
+   *     summary: Get block by id
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Block retrieved successfully.
+   *       404:
+   *         description: Block not found.
+   */
   router.get('/:id', async (req, res, next) => {
     try {
       const data = await services.block.getById(req.params.id);
@@ -58,6 +86,22 @@ export function buildBlockRouter(services: AppServices): Router {
     }
   });
 
+  /**
+   * @openapi
+   * /api/v1/blocks/project/{projectId}:
+   *   get:
+   *     tags: [Blocks]
+   *     summary: List blocks by project id
+   *     parameters:
+   *       - in: path
+   *         name: projectId
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Blocks retrieved successfully.
+   */
   router.get('/project/:projectId', async (req, res, next) => {
     try {
       const data = await services.block.getByProjectId(req.params.projectId);
@@ -80,6 +124,22 @@ export function buildBlockRouter(services: AppServices): Router {
     }
   });
 
+  /**
+   * @openapi
+   * /api/v1/blocks:
+   *   post:
+   *     tags: [Blocks]
+   *     summary: Create block
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/BlockCreateInput'
+   *     responses:
+   *       201:
+   *         description: Block created successfully.
+   */
   router.post('/', async (req, res, next) => {
     try {
       const data = await services.block.create(req.body);
@@ -93,6 +153,28 @@ export function buildBlockRouter(services: AppServices): Router {
     }
   });
 
+  /**
+   * @openapi
+   * /api/v1/blocks/{id}:
+   *   put:
+   *     tags: [Blocks]
+   *     summary: Update block
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/BlockUpdateInput'
+   *     responses:
+   *       200:
+   *         description: Block updated successfully.
+   */
   router.put('/:id', async (req, res, next) => {
     try {
       const data = await services.block.update({
@@ -108,6 +190,22 @@ export function buildBlockRouter(services: AppServices): Router {
     }
   });
 
+  /**
+   * @openapi
+   * /api/v1/blocks/{id}:
+   *   delete:
+   *     tags: [Blocks]
+   *     summary: Delete block
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       204:
+   *         description: Block deleted successfully.
+   */
   router.delete('/:id', async (req, res, next) => {
     try {
       await services.block.delete(req.params.id);

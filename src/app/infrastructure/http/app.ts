@@ -1,8 +1,17 @@
-import cors from "cors";
-import express, { type Express, type Request, type Response, type NextFunction } from "express";
-import type { AppServices } from "../../application/AppServices.js";
-import { buildApiRouter } from "./routes/index.js";
-import { buildErrorResponse, buildSuccessResponse } from "./responses/ApiResponse.js";
+import cors from 'cors';
+import express, {
+  type Express,
+  type Request,
+  type Response,
+  type NextFunction,
+} from 'express';
+import type { AppServices } from '../../application/AppServices.js';
+import { buildApiRouter } from './routes/index.js';
+import {
+  buildErrorResponse,
+  buildSuccessResponse,
+} from './responses/ApiResponse.js';
+import { openApiSpec, swaggerUiHandlers, swaggerUiSetup } from './openapi.js';
 
 export function buildHttpApp(services: AppServices): Express {
   const app = express();
@@ -10,21 +19,64 @@ export function buildHttpApp(services: AppServices): Express {
   app.use(cors());
   app.use(express.json());
 
-  app.get("/health", (_req, res) => {
-    res.json(buildSuccessResponse({ data: { status: "ok" }, message: "Service is healthy" }));
+  app.get('/docs.json', (_req, res) => {
+    res.json(openApiSpec);
+  });
+  app.use('/docs', swaggerUiHandlers, swaggerUiSetup);
+
+  /**
+   * @openapi
+   * /health:
+   *   get:
+   *     tags: [Health]
+   *     summary: Health check
+   *     description: Returns API health status.
+   *     responses:
+   *       200:
+   *         description: Service is healthy.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 success:
+   *                   type: boolean
+   *                   example: true
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     status:
+   *                       type: string
+   *                       example: ok
+   *                 message:
+   *                   type: string
+   *                   example: Service is healthy
+   */
+  app.get('/health', (_req, res) => {
+    res.json(
+      buildSuccessResponse({
+        data: { status: 'ok' },
+        message: 'Service is healthy',
+      }),
+    );
   });
 
-  app.use("/api/v1", buildApiRouter(services));
+  app.use('/api/v1', buildApiRouter(services));
 
   app.use((req: Request, res: Response) => {
-    res.status(404).json(buildErrorResponse(`Route ${req.method} ${req.path} not found`));
+    res
+      .status(404)
+      .json(buildErrorResponse(`Route ${req.method} ${req.path} not found`));
   });
 
-  app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
-    const message = error instanceof Error ? error.message : "Internal server error";
+  app.use(
+    (error: unknown, _req: Request, res: Response, _next: NextFunction) => {
+      const message =
+        error instanceof Error ? error.message : 'Internal server error';
 
-    res.status(500).json(buildErrorResponse(message));
-  });
+      res.status(500).json(buildErrorResponse(message));
+    },
+  );
 
   return app;
 }

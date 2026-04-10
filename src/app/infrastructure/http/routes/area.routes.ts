@@ -19,6 +19,16 @@ function buildPaginationLinks(path: string): PaginationLinks {
 export function buildAreaRouter(services: AppServices): Router {
   const router = Router();
 
+  /**
+   * @openapi
+   * /api/v1/areas:
+   *   get:
+   *     tags: [Areas]
+   *     summary: List areas
+   *     responses:
+   *       200:
+   *         description: Areas retrieved successfully.
+   */
   router.get('/', async (req, res, next) => {
     try {
       const data = await services.area.getAll();
@@ -41,6 +51,24 @@ export function buildAreaRouter(services: AppServices): Router {
     }
   });
 
+  /**
+   * @openapi
+   * /api/v1/areas/{id}:
+   *   get:
+   *     tags: [Areas]
+   *     summary: Get area by id
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Area retrieved successfully.
+   *       404:
+   *         description: Area not found.
+   */
   router.get('/:id', async (req, res, next) => {
     try {
       const data = await services.area.getById(req.params.id);
@@ -58,6 +86,24 @@ export function buildAreaRouter(services: AppServices): Router {
     }
   });
 
+  /**
+   * @openapi
+   * /api/v1/areas/{id}/projects:
+   *   get:
+   *     tags: [Areas]
+   *     summary: Get area with projects
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Area with projects retrieved successfully.
+   *       404:
+   *         description: Area not found.
+   */
   router.get('/:id/projects', async (req, res, next) => {
     try {
       const data = await services.area.getWithProjects(req.params.id);
@@ -78,6 +124,22 @@ export function buildAreaRouter(services: AppServices): Router {
     }
   });
 
+  /**
+   * @openapi
+   * /api/v1/areas:
+   *   post:
+   *     tags: [Areas]
+   *     summary: Create area
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/AreaCreateInput'
+   *     responses:
+   *       201:
+   *         description: Area created successfully.
+   */
   router.post('/', async (req, res, next) => {
     try {
       const data = await services.area.create(req.body);
@@ -91,6 +153,28 @@ export function buildAreaRouter(services: AppServices): Router {
     }
   });
 
+  /**
+   * @openapi
+   * /api/v1/areas/{id}:
+   *   put:
+   *     tags: [Areas]
+   *     summary: Update area
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/AreaUpdateInput'
+   *     responses:
+   *       200:
+   *         description: Area updated successfully.
+   */
   router.put('/:id', async (req, res, next) => {
     try {
       const data = await services.area.update({
@@ -106,6 +190,22 @@ export function buildAreaRouter(services: AppServices): Router {
     }
   });
 
+  /**
+   * @openapi
+   * /api/v1/areas/{id}:
+   *   delete:
+   *     tags: [Areas]
+   *     summary: Delete area
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       204:
+   *         description: Area deleted successfully.
+   */
   router.delete('/:id', async (req, res, next) => {
     try {
       await services.area.delete(req.params.id);
