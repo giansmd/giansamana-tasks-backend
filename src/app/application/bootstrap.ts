@@ -5,8 +5,8 @@ import {
   BlockSupabasePrismaRepository,
   ProjectSupabasePrismaRepository,
 } from "../infrastructure/repositories/index.js";
-import { createSupabaseRpcClient } from "../infrastructure/supabase/client.js";
-import { PrismaClient } from "../../../generated/prisma/client.js";
+import { createSupabaseRpcClient } from "@infrastructure/supabase/client.js";
+import { PrismaClient } from "@generated/prisma/index.js";
 
 export type BootstrapContext = {
   prisma: PrismaClient;

@@ -10,6 +10,15 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "target": "ES2023",
+    "baseUrl": ".",
+    "paths": {
+      "@generated/*": ["generated/*"],
+      "@src/*": ["src/*"],
+      "@app/*": ["src/app/*"],
+      "@application/*": ["src/app/application/*"],
+      "@domain/*": ["src/app/domain/*"],
+      "@infrastructure/*": ["src/app/infrastructure/*"]
+    },
     "types": ["node"],
     // For nodejs:
     // "lib": ["esnext"],
