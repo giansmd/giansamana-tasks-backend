@@ -3,17 +3,31 @@ import type { AppServices } from '../../../application/AppServices.js';
 import {
   buildErrorResponse,
   buildSuccessResponse,
-  type PaginationLinks,
-  type PaginationMeta,
 } from '../responses/ApiResponse.js';
+import {
+  buildPaginationLinks,
+  buildPaginationMeta,
+  paginate,
+  parseDateQuery,
+  parsePaginationQuery,
+} from './pagination.js';
 
-function buildPaginationLinks(path: string): PaginationLinks {
-  return {
-    thisPage: path,
-    prevPage: null,
-    nextPage: null,
-    lastPage: path,
-  };
+function filterByCreatedAtRange<T extends { createdAt: Date }>(
+  items: T[],
+  fechaDesde: Date | null,
+  fechaHasta: Date | null,
+): T[] {
+  return items.filter((item) => {
+    if (fechaDesde && item.createdAt < fechaDesde) {
+      return false;
+    }
+
+    if (fechaHasta && item.createdAt > fechaHasta) {
+      return false;
+    }
+
+    return true;
+  });
 }
 
 export function buildBlockRouter(services: AppServices): Router {
@@ -25,19 +39,60 @@ export function buildBlockRouter(services: AppServices): Router {
    *   get:
    *     tags: [Blocks]
    *     summary: List blocks
+   *     parameters:
+   *       - $ref: '#/components/parameters/PageQueryParam'
+   *       - $ref: '#/components/parameters/PerPageQueryParam'
+   *       - $ref: '#/components/parameters/FechaDesdeQueryParam'
+   *       - $ref: '#/components/parameters/FechaHastaQueryParam'
    *     responses:
    *       200:
    *         description: Blocks retrieved successfully.
+   *       400:
+   *         description: Invalid date filters.
    */
   router.get('/', async (req, res, next) => {
     try {
-      const data = await services.block.getAll();
-      const meta: PaginationMeta = {
-        total: data.length,
-        perPage: data.length,
-        page: 1,
-      };
-      const links = buildPaginationLinks(req.originalUrl);
+      const fechaDesde = parseDateQuery(req.query, 'fecha_desde', 'start');
+      const fechaHasta = parseDateQuery(req.query, 'fecha_hasta', 'end');
+
+      if (fechaDesde === 'invalid' || fechaHasta === 'invalid') {
+        res
+          .status(400)
+          .json(
+            buildErrorResponse(
+              'fecha_desde y fecha_hasta deben ser fechas validas (ISO-8601 o YYYY-MM-DD)',
+            ),
+          );
+        return;
+      }
+
+      if (fechaDesde && fechaHasta && fechaDesde > fechaHasta) {
+        res
+          .status(400)
+          .json(
+            buildErrorResponse(
+              'fecha_desde no puede ser mayor que fecha_hasta',
+            ),
+          );
+        return;
+      }
+
+      const { page, perPage } = parsePaginationQuery(req.query);
+      const items = await services.block.getAll();
+      const filteredItems = filterByCreatedAtRange(
+        items,
+        fechaDesde,
+        fechaHasta,
+      );
+      const { data, total } = paginate(filteredItems, page, perPage);
+      const meta = buildPaginationMeta(total, page, perPage);
+      const links = buildPaginationLinks(
+        `${req.baseUrl}${req.path}`,
+        req.query,
+        page,
+        perPage,
+        total,
+      );
       res.json(
         buildSuccessResponse({
           data,
@@ -98,19 +153,59 @@ export function buildBlockRouter(services: AppServices): Router {
    *         required: true
    *         schema:
    *           type: string
+   *       - $ref: '#/components/parameters/PageQueryParam'
+   *       - $ref: '#/components/parameters/PerPageQueryParam'
+   *       - $ref: '#/components/parameters/FechaDesdeQueryParam'
+   *       - $ref: '#/components/parameters/FechaHastaQueryParam'
    *     responses:
    *       200:
    *         description: Blocks retrieved successfully.
+   *       400:
+   *         description: Invalid date filters.
    */
   router.get('/project/:projectId', async (req, res, next) => {
     try {
-      const data = await services.block.getByProjectId(req.params.projectId);
-      const meta: PaginationMeta = {
-        total: data.length,
-        perPage: data.length,
-        page: 1,
-      };
-      const links = buildPaginationLinks(req.originalUrl);
+      const fechaDesde = parseDateQuery(req.query, 'fecha_desde', 'start');
+      const fechaHasta = parseDateQuery(req.query, 'fecha_hasta', 'end');
+
+      if (fechaDesde === 'invalid' || fechaHasta === 'invalid') {
+        res
+          .status(400)
+          .json(
+            buildErrorResponse(
+              'fecha_desde y fecha_hasta deben ser fechas validas (ISO-8601 o YYYY-MM-DD)',
+            ),
+          );
+        return;
+      }
+
+      if (fechaDesde && fechaHasta && fechaDesde > fechaHasta) {
+        res
+          .status(400)
+          .json(
+            buildErrorResponse(
+              'fecha_desde no puede ser mayor que fecha_hasta',
+            ),
+          );
+        return;
+      }
+
+      const { page, perPage } = parsePaginationQuery(req.query);
+      const items = await services.block.getByProjectId(req.params.projectId);
+      const filteredItems = filterByCreatedAtRange(
+        items,
+        fechaDesde,
+        fechaHasta,
+      );
+      const { data, total } = paginate(filteredItems, page, perPage);
+      const meta = buildPaginationMeta(total, page, perPage);
+      const links = buildPaginationLinks(
+        `${req.baseUrl}${req.path}`,
+        req.query,
+        page,
+        perPage,
+        total,
+      );
       res.json(
         buildSuccessResponse({
           data,
