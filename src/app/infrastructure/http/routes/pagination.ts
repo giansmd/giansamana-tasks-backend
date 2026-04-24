@@ -6,7 +6,7 @@ import type {
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PER_PAGE = 10;
-const MAX_PER_PAGE = 100;
+const MAX_PER_PAGE = 500;
 
 function getQueryValue(value: unknown): string | undefined {
   if (typeof value === 'string') {
