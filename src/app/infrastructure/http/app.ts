@@ -13,6 +13,54 @@ import {
 } from './responses/ApiResponse.js';
 import { openApiSpec, swaggerUiHandlers, swaggerUiSetup } from './openapi.js';
 
+function requireDocsBasicAuth(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void {
+  const configuredUser = process.env.DOCS_BASIC_AUTH_USER;
+  const configuredPassword = process.env.DOCS_BASIC_AUTH_PASSWORD;
+
+  if (!configuredUser || !configuredPassword) {
+    next();
+    return;
+  }
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Basic ')) {
+    res.setHeader('WWW-Authenticate', 'Basic realm="API Docs"');
+    res
+      .status(401)
+      .json(buildErrorResponse('Authentication required to access /docs'));
+    return;
+  }
+
+  const encodedCredentials = authHeader.slice(6).trim();
+  const decodedCredentials = Buffer.from(encodedCredentials, 'base64').toString(
+    'utf8',
+  );
+  const separatorIndex = decodedCredentials.indexOf(':');
+
+  if (separatorIndex < 0) {
+    res.setHeader('WWW-Authenticate', 'Basic realm="API Docs"');
+    res
+      .status(401)
+      .json(buildErrorResponse('Authentication required to access /docs'));
+    return;
+  }
+
+  const username = decodedCredentials.slice(0, separatorIndex);
+  const password = decodedCredentials.slice(separatorIndex + 1);
+
+  if (username !== configuredUser || password !== configuredPassword) {
+    res.setHeader('WWW-Authenticate', 'Basic realm="API Docs"');
+    res.status(401).json(buildErrorResponse('Invalid credentials for /docs'));
+    return;
+  }
+
+  next();
+}
+
 export function buildHttpApp(services: AppServices): Express {
   const app = express();
 
@@ -22,7 +70,7 @@ export function buildHttpApp(services: AppServices): Express {
   app.get('/docs.json', (_req, res) => {
     res.json(openApiSpec);
   });
-  app.use('/docs', swaggerUiHandlers, swaggerUiSetup);
+  app.use('/docs', requireDocsBasicAuth, swaggerUiHandlers, swaggerUiSetup);
 
   /**
    * @openapi

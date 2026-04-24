@@ -3,18 +3,13 @@ import type { AppServices } from '../../../application/AppServices.js';
 import {
   buildErrorResponse,
   buildSuccessResponse,
-  type PaginationLinks,
-  type PaginationMeta,
 } from '../responses/ApiResponse.js';
-
-function buildPaginationLinks(path: string): PaginationLinks {
-  return {
-    thisPage: path,
-    prevPage: null,
-    nextPage: null,
-    lastPage: path,
-  };
-}
+import {
+  buildPaginationLinks,
+  buildPaginationMeta,
+  paginate,
+  parsePaginationQuery,
+} from './pagination.js';
 
 export function buildProjectRouter(services: AppServices): Router {
   const router = Router();
@@ -25,19 +20,26 @@ export function buildProjectRouter(services: AppServices): Router {
    *   get:
    *     tags: [Projects]
    *     summary: List projects
+   *     parameters:
+   *       - $ref: '#/components/parameters/PageQueryParam'
+   *       - $ref: '#/components/parameters/PerPageQueryParam'
    *     responses:
    *       200:
    *         description: Projects retrieved successfully.
    */
   router.get('/', async (req, res, next) => {
     try {
-      const data = await services.project.getAll();
-      const meta: PaginationMeta = {
-        total: data.length,
-        perPage: data.length,
-        page: 1,
-      };
-      const links = buildPaginationLinks(req.originalUrl);
+      const { page, perPage } = parsePaginationQuery(req.query);
+      const items = await services.project.getAll();
+      const { data, total } = paginate(items, page, perPage);
+      const meta = buildPaginationMeta(total, page, perPage);
+      const links = buildPaginationLinks(
+        `${req.baseUrl}${req.path}`,
+        req.query,
+        page,
+        perPage,
+        total,
+      );
       res.json(
         buildSuccessResponse({
           data,

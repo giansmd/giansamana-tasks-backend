@@ -22,6 +22,53 @@ const swaggerDefinition: swaggerJSDoc.OAS3Definition = {
     { name: 'Blocks', description: 'Block management' },
   ],
   components: {
+    parameters: {
+      PageQueryParam: {
+        in: 'query',
+        name: 'page',
+        required: false,
+        schema: {
+          type: 'integer',
+          minimum: 1,
+          default: 1,
+        },
+        description: 'Page number (starts at 1).',
+      },
+      PerPageQueryParam: {
+        in: 'query',
+        name: 'per_page',
+        required: false,
+        schema: {
+          type: 'integer',
+          minimum: 1,
+          maximum: 100,
+          default: 10,
+        },
+        description: 'Items per page (max 100).',
+      },
+      FechaDesdeQueryParam: {
+        in: 'query',
+        name: 'fecha_desde',
+        required: false,
+        schema: {
+          type: 'string',
+          format: 'date-time',
+        },
+        description:
+          'Filter by created_at >= fecha_desde. Supports ISO-8601 or YYYY-MM-DD.',
+      },
+      FechaHastaQueryParam: {
+        in: 'query',
+        name: 'fecha_hasta',
+        required: false,
+        schema: {
+          type: 'string',
+          format: 'date-time',
+        },
+        description:
+          'Filter by created_at <= fecha_hasta. Supports ISO-8601 or YYYY-MM-DD.',
+      },
+    },
     schemas: {
       PaginationMeta: {
         type: 'object',
